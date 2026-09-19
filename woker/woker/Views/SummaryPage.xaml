@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="woker.Views.SummaryPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:woker.Models"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <DataTemplate x:Key="MatTemplate" x:DataType="models:Material">
+            <Grid Padding="12,10" ColumnSpacing="10"
+                  BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Border Width="30" Height="30" CornerRadius="8" VerticalAlignment="Top">
+                    <TextBlock x:Name="CatText" Text="{x:Bind CategoryIcon}" FontSize="13"
+                               Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <StackPanel Grid.Column="1" Spacing="2">
+                    <TextBlock Text="{x:Bind Category}" FontSize="11" Opacity="0.7"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <TextBlock Text="{x:Bind Content}" TextWrapping="Wrap" FontSize="12" />
+                    <TextBlock Text="{x:Bind DateLabel}" FontSize="10" Opacity="0.5"
+                               Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                </StackPanel>
+                <Button Grid.Column="2" Content="{x:Bind PickText}"
+                        Click="OnTogglePick" Tag="{x:Bind Id}" FontSize="11" Padding="10,4"
+                        VerticalAlignment="Center" />
+                <Button Grid.Column="3" Style="{StaticResource SubtleButtonStyle}" Padding="4"
+                        Click="OnDeleteMaterial" Tag="{x:Bind Id}" ToolTipService.ToolTip="删除">
+                    <FontIcon Glyph="&#xE711;" FontSize="12" />
+                </Button>
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid Padding="20,8,20,20" RowSpacing="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid ColumnSpacing="12" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Spacing="2">
+                <TextBlock Text="06 · 周 / 转正总结素材区" FontSize="20" FontWeight="SemiBold" />
+                <TextBlock Text="集中收录核心成果 · 问题改进 · 工作亮点，一键生成周报与转正述职"
+                           FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <Button Style="{StaticResource SubtleButtonStyle}" Click="OnAddMaterial">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <FontIcon Glyph="&#xE710;" FontSize="13" />
+                        <TextBlock Text="新增素材" />
+                    </StackPanel>
+                </Button>
+                <Button Click="OnGenWeek">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <FontIcon Glyph="&#xE8A5;" FontSize="13" />
+                        <TextBlock Text="生成周总结" />
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource AccentButtonStyle}" Click="OnGenTransfer">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <FontIcon Glyph="&#xE945;" FontSize="13" />
+                        <TextBlock Text="生成转正述职" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnSpacing="14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.1*" />
+                <ColumnDefinition Width="1.4*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 素材库 -->
+            <Border CornerRadius="10" Style="{StaticResource CardBorderStyle}">
+                <Grid RowSpacing="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid Padding="4,0">
+                        <TextBlock Text="素材库" FontSize="14" FontWeight="SemiBold" />
+                        <Border HorizontalAlignment="Right" Padding="8,2" CornerRadius="10"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}">
+                            <TextBlock x:Name="MatCount" Text="已收录 0 条" FontSize="11" />
+                        </Border>
+                    </Grid>
+                    <ListView x:Name="MatList" Grid.Row="1" ItemTemplate="{StaticResource MatTemplate}"
+                              SelectionMode="None" />
+                </Grid>
+            </Border>
+
+            <!-- 预览 -->
+            <Border Grid.Column="1" CornerRadius="10" Style="{StaticResource CardBorderStyle}">
+                <Grid RowSpacing="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid Padding="4,0">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <TextBlock x:Name="PreviewTitle" Text="总结预览" FontSize="14" FontWeight="SemiBold" />
+                            <CheckBox x:Name="AiPolishCheck" Content="AI 润色生成" FontSize="12"
+                                      VerticalAlignment="Center" IsChecked="True" />
+                        </StackPanel>
+                        <Button x:Name="CopyBtn" Style="{StaticResource SubtleButtonStyle}" FontSize="12"
+                                HorizontalAlignment="Right" Click="OnCopy">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <FontIcon Glyph="&#xE8C8;" FontSize="12" />
+                                <TextBlock Text="复制" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                    <TextBox x:Name="PreviewBox" Grid.Row="1" IsReadOnly="True" TextWrapping="Wrap"
+                             AcceptsReturn="True" FontFamily="Consolas" FontSize="12"
+                             PlaceholderText="在左侧素材库勾选「纳入」的条目后，点击「生成周总结」或「生成转正述职」，将自动汇总为结构化文档。支持 AI 润色（需在设置页配置大模型）。"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="woker.Views.ReflectionPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:woker.Models"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <DataTemplate x:Key="ReflectTemplate" x:DataType="models:Reflection">
+            <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Margin="0,0,0,10">
+                <Expander.Header>
+                    <Grid ColumnSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <FontIcon Glyph="&#xE7BA;" FontSize="14" />
+                        <StackPanel Grid.Column="1" Spacing="1">
+                            <TextBlock Text="{x:Bind Title}" FontWeight="SemiBold" FontSize="13" TextWrapping="Wrap" />
+                        </StackPanel>
+                        <Border Grid.Column="2" Padding="8,2" CornerRadius="10"
+                                Background="{ThemeResource SubtleFillColorSecondaryBrush}">
+                            <TextBlock Text="{x:Bind Category}" FontSize="11" />
+                        </Border>
+                        <TextBlock Grid.Column="3" FontSize="11" VerticalAlignment="Center"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                            <Run Text="今天 " /><Run Text="{x:Bind TimeStr}" />
+                        </TextBlock>
+                    </Grid>
+                </Expander.Header>
+                <Expander.Content>
+                    <StackPanel Spacing="12" Padding="4,8">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="问题现象" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                            <TextBlock Text="{x:Bind Phenomenon}" TextWrapping="Wrap" FontSize="13" />
+                        </StackPanel>
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="排查过程" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                            <TextBlock Text="{x:Bind Investigation}" TextWrapping="Wrap" FontSize="13" />
+                        </StackPanel>
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="落地方案" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                            <TextBlock Text="{x:Bind Solution}" TextWrapping="Wrap" FontSize="13" />
+                        </StackPanel>
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="优化规避" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                            <TextBlock Text="{x:Bind Prevention}" TextWrapping="Wrap" FontSize="13" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                            <Button Content="编辑" Click="OnEditReflection" Tag="{x:Bind Id}"
+                                    Style="{StaticResource SubtleButtonStyle}" FontSize="12" />
+                            <Button Content="删除" Click="OnDeleteReflection" Tag="{x:Bind Id}"
+                                    Style="{StaticResource SubtleButtonStyle}" FontSize="12" />
+                        </StackPanel>
+                    </StackPanel>
+                </Expander.Content>
+            </Expander>
+        </DataTemplate>
+    </Page.Resources>
+
+    <ScrollViewer Padding="20,8,20,20">
+        <StackPanel Spacing="16" MaxWidth="1200" HorizontalAlignment="Stretch">
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Spacing="2">
+                    <TextBlock Text="02 · 问题复盘与解决方案" FontSize="20" FontWeight="SemiBold" />
+                    <TextBlock Text="问题现象 → 排查过程 → 落地方案 → 优化规避，形成可复用的能力沉淀"
+                               FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+                <Button Grid.Column="1" Style="{StaticResource AccentButtonStyle}" Click="OnAddReflection">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE710;" FontSize="13" />
+                        <TextBlock Text="新增复盘" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <ListView x:Name="ReflectList" ItemTemplate="{StaticResource ReflectTemplate}"
+                      SelectionMode="None" />
+
+            <StackPanel x:Name="EmptyState" Padding="24" Spacing="8" HorizontalAlignment="Center"
+                        Visibility="Collapsed">
+                <FontIcon Glyph="&#xE7B3;" FontSize="28" Opacity="0.5" HorizontalAlignment="Center" />
+                <TextBlock Text="今日暂无问题复盘。" FontSize="12"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

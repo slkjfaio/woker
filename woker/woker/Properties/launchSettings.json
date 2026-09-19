@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "woker (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "woker (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

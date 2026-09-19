@@ -1,0 +1,37 @@
+name: Build desktop installer
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version, e.g. 2.1.1'
+        required: true
+      release_repository:
+        description: 'Public release repository (owner/repo); blank uses this repository'
+        required: false
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build and package
+        shell: pwsh
+        env:
+          APP_VERSION: ${{ inputs.version }}
+          RELEASE_REPOSITORY: ${{ inputs.release_repository || github.repository }}
+        run: |
+          choco install innosetup --version=6.7.3 --yes --no-progress
+          if ($LASTEXITCODE -ne 0) { throw 'Inno Setup install failed' }
+          ./packaging/build.ps1 -Version $env:APP_VERSION -Repository $env:RELEASE_REPOSITORY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WorkBench-desktop-release
+          path: |
+            artifacts/*/*-Setup.exe
+            artifacts/*/update-win-x64.json
+            artifacts/*/SHA256SUMS
+          if-no-files-found: error
