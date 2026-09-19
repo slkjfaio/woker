@@ -14,6 +14,7 @@ namespace woker.Views
     {
         private bool _isRegister;
         private string _captchaId = "";
+        private int _captchaRequest;
 
         public LoginPage()
         {
@@ -68,28 +69,38 @@ namespace woker.Views
 
         private async Task RefreshCaptchaAsync()
         {
+            var request = ++_captchaRequest;
             CaptchaImage.Source = null;
             CaptchaAnswerBox.Text = "";
             _captchaId = "";
+            if (!ConfigureServer()) return;
+            var server = ApiService.Config.ApiBaseUrl;
             try
             {
                 var captcha = await AuthService.GetCaptchaAsync();
-                if (captcha == null) return;
-                _captchaId = captcha.CaptchaId;
-                await SetCaptchaImageAsync(captcha.Image);
+                if (captcha == null || request != _captchaRequest || server != ApiService.Config.ApiBaseUrl) return;
+                var image = await LoadCaptchaImageAsync(captcha.Image);
+                if (request == _captchaRequest && server == ApiService.Config.ApiBaseUrl && image != null)
+                {
+                    CaptchaImage.Source = image;
+                    _captchaId = captcha.CaptchaId;
+                }
             }
-            catch { /* 验证码获取失败时留空，用户可点刷新重试 */ }
+            catch (Exception ex)
+            {
+                if (request == _captchaRequest) ShowError("验证码加载失败，请检查服务器地址：" + ex.Message);
+            }
         }
 
-        private async Task SetCaptchaImageAsync(string dataUrl)
+        private async Task<BitmapImage?> LoadCaptchaImageAsync(string dataUrl)
         {
             var comma = dataUrl.IndexOf(',');
-            if (comma < 0 || comma + 1 >= dataUrl.Length) return;
+            if (comma < 0 || comma + 1 >= dataUrl.Length) return null;
             var bytes = Convert.FromBase64String(dataUrl[(comma + 1)..]);
             using var ms = new MemoryStream(bytes);
             var bmp = new BitmapImage();
             await bmp.SetSourceAsync(ms.AsRandomAccessStream());
-            CaptchaImage.Source = bmp;
+            return bmp;
         }
 
         private void OnSubmitClick(object sender, RoutedEventArgs e) => SubmitAsync();
@@ -102,6 +113,9 @@ namespace woker.Views
                 _ = config.ApiBaseUrl;
                 if (!string.Equals(config.BaseUrl, ApiService.Config.BaseUrl, StringComparison.Ordinal))
                 {
+                    _captchaId = "";
+                    CaptchaImage.Source = null;
+                    CaptchaAnswerBox.Text = "";
                     SessionService.Clear();
                     ApiService.UpdateConfig(config);
                 }

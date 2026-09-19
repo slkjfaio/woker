@@ -26,7 +26,7 @@ if (!$SkipPublish) {
     if ($LASTEXITCODE -ne 0) { throw 'dotnet publish failed.' }
 }
 if (!(Test-Path (Join-Path $publishDir 'woker.exe'))) { throw 'Published woker.exe is missing.' }
-foreach ($resource in @('App.xbf','MainWindow.xbf','Views/LoginPage.xbf','Views/SettingsPage.xbf','Assets/Square44x44Logo.scale-200.png')) {
+foreach ($resource in @('woker.pri','App.xbf','MainWindow.xbf','Views/LoginPage.xbf','Views/SettingsPage.xbf','Assets/Square44x44Logo.scale-200.png')) {
     if (!(Test-Path (Join-Path $publishDir $resource))) { throw "Required WinUI resource missing from publish output: $resource" }
 }
 $builtVersion = [Diagnostics.FileVersionInfo]::GetVersionInfo((Join-Path $publishDir 'woker.dll')).FileVersion

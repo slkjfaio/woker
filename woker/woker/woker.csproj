@@ -78,9 +78,13 @@
   <!-- Unpackaged publish must include compiled WinUI pages, not only DLLs and PRI indexes. -->
   <Target Name="PublishCompiledXaml" AfterTargets="ComputeFilesToPublish" Condition="'$(WindowsPackageType)' == 'None'">
     <ItemGroup>
-      <_DesktopXbf Include="$(TargetDir)**\*.xbf" />
+      <_DesktopXbf Include="$(TargetDir)**\*.xbf" Exclude="$(TargetDir)AppX\**;$(TargetDir)publish\**" />
       <ResolvedFileToPublish Include="@(_DesktopXbf)">
         <RelativePath>%(_DesktopXbf.RecursiveDir)%(_DesktopXbf.Filename)%(_DesktopXbf.Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+      <ResolvedFileToPublish Include="$(TargetDir)$(AssemblyName).pri">
+        <RelativePath>$(AssemblyName).pri</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ResolvedFileToPublish>
     </ItemGroup>

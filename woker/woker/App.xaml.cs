@@ -30,8 +30,8 @@ namespace woker
             UnhandledException += (s, e) =>
             {
                 System.Diagnostics.Debug.WriteLine("[全局异常] " + e.Message);
-                RecordStartupFailure(new Exception(e.Message, e.Exception));
-                e.Handled = true;
+                if (MainWindow == null) RecordStartupFailure(new Exception(e.Message, e.Exception));
+                e.Handled = MainWindow != null;
             };
             try { InitializeComponent(); }
             catch (Exception ex) { RecordStartupFailure(ex); throw; }
